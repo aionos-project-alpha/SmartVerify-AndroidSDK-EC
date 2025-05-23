@@ -13,7 +13,6 @@ object ApiClient {
     fun getInstance(): Retrofit {
         if (retrofit == null) {
             retrofit = Retrofit.Builder()
-                //.baseUrl(baseUrl!!)
                 .baseUrl(BuildConfig.BASE_URL+"id-auth/api/v1/id-auth/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()

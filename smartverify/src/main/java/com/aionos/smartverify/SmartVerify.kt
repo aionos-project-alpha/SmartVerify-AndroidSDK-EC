@@ -278,7 +278,6 @@ class SmartVerify private constructor() {
         val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         val sm = context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
 
-        // Permission check
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
             ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED
         ) {
