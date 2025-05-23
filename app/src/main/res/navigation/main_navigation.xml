@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_navigation"
+    app:startDestination="@id/authenticateFragment">
+
+    <fragment
+        android:id="@+id/authenticateFragment"
+        android:name="com.aionos.smartverify.AuthenticateFragment"
+        android:label="fragment_authenticate"
+        tools:layout="@layout/fragment_authenticate" >
+        <action
+            android:id="@+id/action_authenticateFragment_to_statusFragment"
+            app:destination="@id/statusFragment" />
+        <action
+            android:id="@+id/action_authenticateFragment_to_verifyOtpFragment"
+            app:destination="@id/verifyOtpFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/statusFragment"
+        android:name="com.aionos.smartverify.StatusFragment"
+        android:label="fragment_status"
+        tools:layout="@layout/fragment_status" />
+    <fragment
+        android:id="@+id/verifyOtpFragment"
+        android:name="com.aionos.smartverify.VerifyOtpFragment"
+        android:label="fragment_verify_otp"
+        tools:layout="@layout/fragment_verify_otp" >
+        <action
+            android:id="@+id/action_verifyOtpFragment_to_statusFragment"
+            app:destination="@id/statusFragment" />
+    </fragment>
+</navigation>
