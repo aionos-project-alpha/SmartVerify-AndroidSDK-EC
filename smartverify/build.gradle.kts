@@ -54,7 +54,7 @@ afterEvaluate {
             create<MavenPublication>("release") {
                 groupId = "com.github.aionos-project-alpha"
                 artifactId = "SmartVerify-AndroidSDK-EC"
-                version = "1.0.0"
+                version = "1.0.1"
 
                 from(components["release"])
             }
