@@ -1,5 +1,6 @@
 package com.aionos.smartverify
 
+import android.util.Log
 import okhttp3.Credentials
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -34,7 +35,7 @@ object ApiClient {
             .build()
 
         authRetrofit = Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL+"/oauth2-cc/")
+            .baseUrl(BuildConfig.BASE_URL+"oauth2-cc/")
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

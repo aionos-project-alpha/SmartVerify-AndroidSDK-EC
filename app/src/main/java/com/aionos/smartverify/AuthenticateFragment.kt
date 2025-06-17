@@ -57,10 +57,10 @@ class AuthenticateFragment : Fragment() {
     private fun networkcheck() {
         isWifi = NetworkUtils.isWifiConnected(requireContext())
         isCellular = NetworkUtils.isCellularConnected(requireContext())
-        Log.e("NetworkCheck", "Wifi: $isWifi, Cellular: $isCellular")
+//        Log.e("NetworkCheck", "Wifi: $isWifi, Cellular: $isCellular")
 
         if (isWifi) {
-            Log.e("NetworkCheck", "Wi-Fi is connected")
+//            Log.e("NetworkCheck", "Wi-Fi is connected")
             Toast.makeText(requireContext(), "Wi-Fi is connected", Toast.LENGTH_SHORT).show()
             AlertDialog.Builder(requireContext())
                 .setTitle("Switch to Mobile Data")
@@ -71,11 +71,11 @@ class AuthenticateFragment : Fragment() {
                 .setNegativeButton("No", null)
                 .show()
         } else if (isCellular) {
-            Log.e("NetworkCheck", "Cellular is connected")
+//            Log.e("NetworkCheck", "Cellular is connected")
             Toast.makeText(requireContext(), "Cellular is connected", Toast.LENGTH_SHORT).show()
             authenticate()
         } else {
-            Log.e("NetworkCheck", "No network connection")
+//            Log.e("NetworkCheck", "No network connection")
             Toast.makeText(requireContext(), "No network connection", Toast.LENGTH_SHORT).show()
         }
     }
@@ -100,7 +100,7 @@ class AuthenticateFragment : Fragment() {
 
             override fun onUnavailable() {
                 super.onUnavailable()
-                Log.e("NetworkCheck", "Cellular network unavailable")
+//                Log.e("NetworkCheck", "Cellular network unavailable")
             }
         })
     }
@@ -111,7 +111,7 @@ class AuthenticateFragment : Fragment() {
             "a54FKl22FLCN1Y9su3A1DaUO9WrBqkCh62e1OkbvSkiLsyLubuvkJSIhcb5u5HNz",
             object : SmartVerify.ApiCallback {
                 override fun onSuccess(result: String) {
-                    Log.e("Token fetched Successful: ", result)
+//                    Log.e("Token fetched Successful: ", result)
                     token = result
                     PreferenceHelper.saveToken(requireContext(), token)
                 }
@@ -222,14 +222,14 @@ class AuthenticateFragment : Fragment() {
             cellularNetwork = "TSEL"
         )
 
-        Log.e("Authentication Request", authRequest.toString())
+//        Log.e("Authentication Request", authRequest.toString())
 
         sdk.authenticate(
             PreferenceHelper.getToken(requireContext())!!,
             authRequest,
             object : SmartVerify.ApiCallback {
                 override fun onSuccess(result: String) {
-                    Log.e("Authentication Successful", result)
+//                    Log.e("Authentication Successful", result)
                     val jsonResponse = JSONObject(result)
                     val txnId = jsonResponse.getString("txnId")
 
@@ -242,7 +242,7 @@ class AuthenticateFragment : Fragment() {
                                 CoroutineScope(Dispatchers.Main).launch {
                                     sdk.getStatus(token, txnId, object : SmartVerify.ApiCallback {
                                         override fun onSuccess(result: String) {
-                                            Log.e("Status Fetch Successful:", result)
+//                                            Log.e("Status Fetch Successful:", result)
                                             val statusResponse = JSONObject(result)
                                             val status = statusResponse.getString("status")
                                             val message = statusResponse.getString("message")
@@ -256,7 +256,7 @@ class AuthenticateFragment : Fragment() {
                                                 }
                                                 status == "false" && !message.isNullOrEmpty() -> {
                                                     Toast.makeText(requireContext(), "Authentication Failed", Toast.LENGTH_SHORT).show()
-                                                    Log.e("Auth:", "Status is false")
+//                                                    Log.e("Auth:", "Status is false")
                                                 }
                                             }
                                         }
