@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.aionos.smartverify"
-    compileSdk = 34
+    compileSdk = 35
 
     buildFeatures{
         buildConfig = true
@@ -59,6 +59,5 @@ afterEvaluate {
                 from(components["release"])
             }
         }
-
     }
 }
