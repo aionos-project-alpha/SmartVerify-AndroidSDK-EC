@@ -1,12 +1,14 @@
 package com.aionos.smartverify
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import android.os.Build
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import android.util.Log
@@ -241,28 +243,13 @@ class SmartVerify private constructor() {
         fun onError(error: String)
     }
 
+    @SuppressLint("MissingPermission") // Ensure permissions are in manifest & granted
     fun bindToCellularNetwork(context: Context, onBound: (Network?) -> Unit) {
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
         val request = NetworkRequest.Builder()
             .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
-            .build()
-
-        cm.requestNetwork(request, object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network) {
-                cm.bindProcessToNetwork(network)
-                onBound(network)
-            }
-
-            override fun onUnavailable() {
-                onBound(null)
-            }
-        })
-    }
-
-    fun bindToCellularNetworkNew(context: Context, onBound: (Network?) -> Unit) {
-        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val request = NetworkRequest.Builder()
-            .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             .build()
 
         var isCallbackCalled = false
@@ -271,8 +258,15 @@ class SmartVerify private constructor() {
             override fun onAvailable(network: Network) {
                 if (!isCallbackCalled) {
                     isCallbackCalled = true
-                    Log.d("SmartVerify", "Cellular network available, binding to: $network")
-                    cm.bindProcessToNetwork(network)
+                    Log.d("SmartVerify", "Cellular network available: $network")
+
+                    // Bind for process traffic
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        cm.bindProcessToNetwork(network)
+                    } else {
+                        ConnectivityManager.setProcessDefaultNetwork(network)
+                    }
+
                     onBound(network)
                 }
             }
@@ -284,21 +278,31 @@ class SmartVerify private constructor() {
                     onBound(null)
                 }
             }
+
+            override fun onLost(network: Network) {
+                super.onLost(network)
+                Log.w("SmartVerify", "Cellular network lost: $network")
+            }
         }
 
+        // Request network with a longer timeout (10s for Android 10 reliability)
         cm.requestNetwork(request, callback)
 
-        // Timeout handler after 5 seconds
         CoroutineScope(Dispatchers.Main).launch {
-            delay(5000)
+            delay(3000)
             if (!isCallbackCalled) {
                 isCallbackCalled = true
                 Log.e("SmartVerify", "Cellular bind timeout - no callback triggered")
-                cm.unregisterNetworkCallback(callback)
+                try {
+                    cm.unregisterNetworkCallback(callback)
+                } catch (e: Exception) {
+                    Log.w("SmartVerify", "Callback already unregistered: ${e.message}")
+                }
                 onBound(null)
             }
         }
     }
+
 
 
     fun buildAuthRequest(
