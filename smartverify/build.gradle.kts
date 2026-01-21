@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.aionos.smartverify"
-    compileSdk = 34
+    compileSdk = 35
 
     buildFeatures{
         buildConfig = true
@@ -17,7 +17,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-        buildConfigField("String", "BASE_URL", "\"https://34.110.212.219.nip.io/\"")
+        buildConfigField("String", "BASE_URL_TOKEN", "\"https://136.110.145.34.nip.io/\"")
+        buildConfigField("String", "BASE_URL", "\"https://dev-smartverify.aionos.co/\"")
     }
 
     buildTypes {
@@ -54,11 +55,10 @@ afterEvaluate {
             create<MavenPublication>("release") {
                 groupId = "com.github.aionos-project-alpha"
                 artifactId = "SmartVerify-AndroidSDK-EC"
-                version = "1.0.2"
+                version = "1.0.4"
 
                 from(components["release"])
             }
         }
-
     }
 }

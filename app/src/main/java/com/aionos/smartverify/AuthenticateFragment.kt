@@ -107,8 +107,8 @@ class AuthenticateFragment : Fragment() {
 
     private fun getToken() {
         sdk.getToken(
-            "apRYwbyYh6ZRbjAsOGPYiGDwWRoTXUe0w8i10slLxsW8WuFf",
-            "a54FKl22FLCN1Y9su3A1DaUO9WrBqkCh62e1OkbvSkiLsyLubuvkJSIhcb5u5HNz",
+            "client_id",
+            "client_secret",
             object : SmartVerify.ApiCallback {
                 override fun onSuccess(result: String) {
 //                    Log.e("Token fetched Successful: ", result)
@@ -117,7 +117,7 @@ class AuthenticateFragment : Fragment() {
                 }
 
                 override fun onError(error: String) {
-                    Log.e("Authentication Failed: ", error)
+                    //Log.e("Authentication Failed: ", error)
                 }
             })
     }
@@ -262,7 +262,7 @@ class AuthenticateFragment : Fragment() {
                                         }
 
                                         override fun onError(error: String) {
-                                            Log.e("Auth error:", error)
+//                                            Log.e("Auth error:", error)
                                         }
                                     })
                                 }
@@ -276,7 +276,7 @@ class AuthenticateFragment : Fragment() {
                 }
 
                 override fun onError(error: String) {
-                    Log.e("Auth error:", error)
+//                    Log.e("Auth error:", error)
                 }
             }
         )

@@ -18,7 +18,7 @@ import retrofit2.http.Query
 interface ApiService {
 
     @FormUrlEncoded
-    @POST("jwt")
+    @POST("token")
     fun getToken(
         @Query("apikey") clientId: String,
         @Field("grant_type") grantType: String = "client_credentials"
@@ -43,4 +43,9 @@ interface ApiService {
         @Body request: VerifyOtpRequest
     ): Call<ResponseBody>
 
+    @POST("resendOtp")
+    fun resendOtp(
+        @Header(KEY_AUTHENTICATION) token: String,
+        @Query("txnId") txnId: String
+    ): Call<ResponseBody>
 }

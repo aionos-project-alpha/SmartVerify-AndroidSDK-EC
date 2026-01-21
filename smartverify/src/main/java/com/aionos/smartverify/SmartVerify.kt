@@ -1,12 +1,14 @@
 package com.aionos.smartverify
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import android.os.Build
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import android.util.Log
@@ -15,6 +17,10 @@ import com.aionos.smartverify.api.ApiService
 import com.aionos.smartverify.model.AuthRequest
 import com.aionos.smartverify.model.VerifyOtpRequest
 import com.aionos.smartverify.model.Workflow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import org.json.JSONException
 import org.json.JSONObject
@@ -78,14 +84,14 @@ class SmartVerify private constructor() {
             )
             cipher.init(Cipher.ENCRYPT_MODE, publicKey, oaepParams)
 
-            Log.e("DataToEncrypt SDK", data)
+//            Log.e("DataToEncrypt SDK", data)
 
             val encryptedData = cipher.doFinal(data.toByteArray())
 
-            Log.e("EncryptedData SDK", encryptedData.toString())
+//            Log.e("EncryptedData SDK", encryptedData.toString())
             return Base64.getEncoder().encodeToString(encryptedData)
         } catch (e: Exception) {
-            Log.e("EncryptionError SDK", "Error encrypting mobile number: ${e.message}", e)
+//            Log.e("EncryptionError SDK", "Error encrypting mobile number: ${e.message}", e)
             return ""
         }
     }
@@ -111,7 +117,7 @@ class SmartVerify private constructor() {
                 if (response.isSuccessful && response.body() != null) {
                     val responseBody = response.body()!!.string()
 
-                    Log.e("Token ApiResponse SDK", "Response Body: $responseBody")
+//                    Log.e("Token ApiResponse SDK", "Response Body: $responseBody")
 
                     try {
                         val jsonObject = JSONObject(responseBody)
@@ -148,26 +154,26 @@ class SmartVerify private constructor() {
             workflow.copy(mobileNumberTo = encryptedMobileNumber)
         }
         val encryptedAuthRequest = authRequest.copy(workflow = encryptedWorkflow)
-        Log.e("AuthRequest SDK", encryptedAuthRequest.toString())
+//        Log.e("AuthRequest SDK", encryptedAuthRequest.toString())
         val call = authApiService.authenticate("Bearer $token", encryptedAuthRequest)
-        Log.e("Auth call request SDK", "Response ${call.request()}")
-        call.enqueue(object : Callback<ResponseBody> {
+//        Log.e("Auth call request SDK", "Response ${call.request()}")
+        call.enqueue    (object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                Log.e("Auth onResponse SDK", "Response Code: ${response.code()}")
-                Log.e("Auth onResponse SDK", "Response Headers: ${response.headers()}")
+//                Log.e("Auth onResponse SDK", "Response Code: ${response.code()}")
+//                Log.e("Auth onResponse SDK", "Response Headers: ${response.headers()}")
                 if (response.isSuccessful && response.body() != null) {
                     val responseBody = response.body()!!.string()
-                    Log.e("Auth ApiResponse SDK", "Response Body: $responseBody")
+//                    Log.e("Auth ApiResponse SDK", "Response Body: $responseBody")
                     callback.onSuccess(responseBody)
                 } else {
                     val errorBody = response.errorBody()?.string() ?: "No error body"
-                    Log.e("Auth ApiError SDK", "Error: ${response.message()}, Body: $errorBody")
+//                    Log.e("Auth ApiError SDK", "Error: ${response.message()}, Body: $errorBody")
                     callback.onError("Error: ${response.message()}")
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Log.e("Auth onFailure SDK", "Failure: ${t.message}")
+//                Log.e("Auth onFailure SDK", "Failure: ${t.message}")
                 callback.onError("Failure: ${t.message}")
             }
         })
@@ -181,22 +187,22 @@ class SmartVerify private constructor() {
         val call = authApiService.getStatus("Bearer $token", txnId)
         call.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                Log.e("Retrofit SDK", "onResponse called")
-                Log.e("onResponse SDK", "Response Code: ${response.code()}")
-                Log.e("onResponse SDK", "Response Headers: ${response.headers()}")
+//                Log.e("Retrofit SDK", "onResponse called")
+//                Log.e("onResponse SDK", "Response Code: ${response.code()}")
+//                Log.e("onResponse SDK", "Response Headers: ${response.headers()}")
                 if (response.isSuccessful && response.body() != null) {
                     val responseBody = response.body()!!.string()
-                    Log.e("ApiResponse SDK", "Response Body: $responseBody")
+//                    Log.e("ApiResponse SDK", "Response Body: $responseBody")
                     callback.onSuccess(responseBody)
                 } else {
                     val errorBody = response.errorBody()?.string() ?: "No error body"
-                    Log.e("ApiError SDK", "Error: ${response.message()}, Body: $errorBody")
+//                    Log.e("ApiError SDK", "Error: ${response.message()}, Body: $errorBody")
                     callback.onError("Error: ${response.message()}")
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Log.e("onFailure SDK", "Failure: ${t.message}")
+//                Log.e("onFailure SDK", "Failure: ${t.message}")
                 callback.onError("Failure: ${t.message}")
             }
         })
@@ -216,17 +222,40 @@ class SmartVerify private constructor() {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful && response.body() != null) {
                     val responseBody = response.body()!!.string()
-                    Log.e("ApiResponse SDK", "Response Body: $responseBody")
+//                    Log.e("ApiResponse SDK", "Response Body: $responseBody")
                     callback.onSuccess(responseBody)
                 } else {
                     val errorBody = response.errorBody()?.string() ?: "No error body"
-                    Log.e("ApiError SDK", "Error: ${response.message()}, Body: $errorBody")
+//                    Log.e("ApiError SDK", "Error: ${response.message()}, Body: $errorBody")
                     callback.onError("Error: ${response.message()}, Body: $errorBody")
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Log.e("ApiFailure SDK", "Failure: ${t.message}")
+//                Log.e("ApiFailure SDK", "Failure: ${t.message}")
+                callback.onError("Failure: ${t.message}")
+            }
+        })
+    }
+
+    fun resendOtp(
+        token: String,
+        txnId: String,
+        callback: ApiCallback
+    ) {
+        val call = authApiService.resendOtp("Bearer $token", txnId)
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val responseBody = response.body()!!.string()
+                    callback.onSuccess(responseBody)
+                } else {
+                    val errorBody = response.errorBody()?.string() ?: "No error body"
+                    callback.onError("Error: ${response.message()}, Body: $errorBody")
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 callback.onError("Failure: ${t.message}")
             }
         })
@@ -237,23 +266,67 @@ class SmartVerify private constructor() {
         fun onError(error: String)
     }
 
+    @SuppressLint("MissingPermission") // Ensure permissions are in manifest & granted
     fun bindToCellularNetwork(context: Context, onBound: (Network?) -> Unit) {
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
         val request = NetworkRequest.Builder()
             .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             .build()
 
-        cm.requestNetwork(request, object : ConnectivityManager.NetworkCallback() {
+        var isCallbackCalled = false
+
+        val callback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
-                cm.bindProcessToNetwork(network)
-                onBound(network)
+                if (!isCallbackCalled) {
+                    isCallbackCalled = true
+                    Log.d("SmartVerify", "Cellular network available: $network")
+
+                    // Bind for process traffic
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        cm.bindProcessToNetwork(network)
+                    } else {
+                        ConnectivityManager.setProcessDefaultNetwork(network)
+                    }
+
+                    onBound(network)
+                }
             }
 
             override fun onUnavailable() {
+                if (!isCallbackCalled) {
+                    isCallbackCalled = true
+                    Log.e("SmartVerify", "Cellular network unavailable")
+                    onBound(null)
+                }
+            }
+
+            override fun onLost(network: Network) {
+                super.onLost(network)
+                Log.w("SmartVerify", "Cellular network lost: $network")
+            }
+        }
+
+        // Request network with a longer timeout (10s for Android 10 reliability)
+        cm.requestNetwork(request, callback)
+
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(3000)
+            if (!isCallbackCalled) {
+                isCallbackCalled = true
+                Log.e("SmartVerify", "Cellular bind timeout - no callback triggered")
+                try {
+                    cm.unregisterNetworkCallback(callback)
+                } catch (e: Exception) {
+                    Log.w("SmartVerify", "Callback already unregistered: ${e.message}")
+                }
                 onBound(null)
             }
-        })
+        }
     }
+
+
 
     fun buildAuthRequest(
         number: String,
