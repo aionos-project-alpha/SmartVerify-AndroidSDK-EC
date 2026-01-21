@@ -122,23 +122,23 @@ class SmartVerify private constructor() {
                     try {
                         val jsonObject = JSONObject(responseBody)
                         val token = jsonObject.getString("access_token")
-                        Log.e("Token ApiResponse SDK", "Response Body: $token")
+//                        Log.e("Token ApiResponse SDK", "Response Body: $token")
 
                         callback.onSuccess(token)
                     } catch (e: JSONException) {
-                        Log.e("Token JSONParseError SDK", "Failed to parse token: ${e.message}")
+//                        Log.e("Token JSONParseError SDK", "Failed to parse token: ${e.message}")
                         callback.onError("Failed to parse token")
                     }
                 } else {
                     val errorBody = response.errorBody()?.string() ?: "No error body"
-                    Log.e("ApiError SDK", "Error: ${response.message()}, Body: $errorBody")
+//                    Log.e("ApiError SDK", "Error: ${response.message()}, Body: $errorBody")
 
                     callback.onError("Error: ${response.message()}")
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Log.e("onTokenFailure SDK", "Failure: ${t.message}")
+//                Log.e("onTokenFailure SDK", "Failure: ${t.message}")
                 callback.onError("Token Failure: ${t.message}")
             }
         })
