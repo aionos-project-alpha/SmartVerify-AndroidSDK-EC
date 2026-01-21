@@ -238,6 +238,29 @@ class SmartVerify private constructor() {
         })
     }
 
+    fun resendOtp(
+        token: String,
+        txnId: String,
+        callback: ApiCallback
+    ) {
+        val call = authApiService.resendOtp("Bearer $token", txnId)
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val responseBody = response.body()!!.string()
+                    callback.onSuccess(responseBody)
+                } else {
+                    val errorBody = response.errorBody()?.string() ?: "No error body"
+                    callback.onError("Error: ${response.message()}, Body: $errorBody")
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                callback.onError("Failure: ${t.message}")
+            }
+        })
+    }
+
     interface ApiCallback {
         fun onSuccess(result: String)
         fun onError(error: String)

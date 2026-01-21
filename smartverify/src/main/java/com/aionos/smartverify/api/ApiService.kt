@@ -43,4 +43,9 @@ interface ApiService {
         @Body request: VerifyOtpRequest
     ): Call<ResponseBody>
 
+    @POST("resendOtp")
+    fun resendOtp(
+        @Header(KEY_AUTHENTICATION) token: String,
+        @Query("txnId") txnId: String
+    ): Call<ResponseBody>
 }
