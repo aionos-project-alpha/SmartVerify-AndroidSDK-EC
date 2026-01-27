@@ -17,7 +17,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-        buildConfigField("String", "BASE_URL", "\"https://apidev.ioh.co.id/\"")
+        buildConfigField("String", "BASE_URL", "\"https://apigw.ioh.co.id/\"")
     }
 
     buildTypes {
@@ -54,7 +54,7 @@ afterEvaluate {
             create<MavenPublication>("release") {
                 groupId = "com.github.aionos-project-alpha"
                 artifactId = "SmartVerify-AndroidSDK-EC"
-                version = "1.0.6"
+                version = "1.0.7"
 
                 from(components["release"])
             }
